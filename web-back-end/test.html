@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  let ps = function (x, seconds) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(x);
+        seconds && console.log(x);
+      }, (seconds || 1) * 1000); // resolve(x)
+    });
+  };
+  async function test(...funcs) {
+    let res = 0;
+    for (let func of funcs) {
+      let result = await func;
+      console.log(result);
+      res += result;
+    }
+    // throw new Error('error'); 抛出错误后就reject了
+    return res;
+  }
+  function xhr() {
+    let oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", () => console.log('异步xhr-onload...'));
+    oReq.open("GET", "https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js");
+    oReq.send();
+
+    oReq.onreadystatechange = function () {
+      if (oReq.readyState === XMLHttpRequest.DONE) { // 4
+        if (oReq.status === 200) {
+          console.log('异步xhr-complete...')
+        }
+      }
+    };
+  }
+
+  xhr();
+
+  // setInterval(() => console.log('异步-setInterval...'), 0);
+
+  setTimeout(() => console.log('异步-setTimeout...'), 1000);
+
+  test(ps(1), ps(2), ps(3)).then(res => console.log(res)).catch(err => console.log(err));
+  ps('异步-promise...').then(res => console.log(res));
+  Promise.resolve('异步-Promise.resolve()...').then(res => console.log(res));
+
+  // 延时
+  for (let i = 0; i < 1000000000; i++);
+  // 同步模块的代码肯定最先处理完
+  console.log('同步...');
+
+  Promise.all([ps(111, 3), ps(222, 1), ps(333, 2)]).then(results => console.log(results));
+
+  async function testAwaitAsync(funcs) {
+    return await Promise.all(funcs);
+  }
+  testAwaitAsync([ps(1111, 3), ps(2222, 1), ps(3333, 2)]).then(results => console.log(results));
+
+  async function testAwaitSync() {
+    let arr = [];
+    for (let i = 3; i > 0; i--) {
+      arr.push(await ps(`testAwaitSync-${arr.length}`, i));
+    }
+    return arr;
+  }
+  testAwaitSync().then(results => console.log(results));
+
+  // 三种异步方式：xhr、setTimeout/setInterval、promise
+  // 同步代码始终是比异步代码最先执行的，不管位置先后，也不管中途设置的同步执行的循环体运行多长时间
+  // xhr创建请求的时候会消耗时间
+  // 异步方式中，如果promise内容体中没有延时处理，setTimeout时延为0，那么执行顺序是：promise > setTimeout > xhr
+  // 如果promise、setTimeout都有时延，执行顺序就看自己的操作返回时间了
+  // async/await 函数返回值是promise，设置了await会等待后面语句执行（但是不影响其它模块）
+  // await表达式会暂停整个async函数的执行进程并出让其控制权，只有当其等待的基于promise的异步操作被兑现或被拒绝之后才会恢复进程。
+  // promise的解决值会被当作该await表达式的返回值。使用async / await关键字就可以在异步代码中使用普通的try / catch代码块。
+  // 一个不含await表达式的async函数是会同步运行的，如果函数体内有一个await表达式，async函数就一定会异步执行。
+  // Promise.all 里面的promise是同步调用异步执行(看谁先执行完就返回，最后全部fulfilled就返回结果)。
+</script>
+</body>
+</html>

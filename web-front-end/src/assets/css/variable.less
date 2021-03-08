@@ -1,0 +1,35 @@
+// 系统的一些能公用的变量和模块
+@colorHighlight: #1aa8de;
+@colorDefaultFont: #4e6471;
+@colorPlaceholder: #c4d1d7;
+@colorDanger: #f65a4b;
+
+@textColorSuccess: #67C23A;
+@textColorError: #F56C6C;
+
+.mixinWidth(@width) {
+  width: ~'@{width}px' !important;
+}
+
+.mixinHeight(@height) {
+  height: ~'@{height}px';
+}
+
+.mixinFontSize(@size) {
+  font-size: ~'@{size}px';
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+.text--success {
+  color: @textColorSuccess;
+}
+.text--error {
+  color: @textColorError;
+}

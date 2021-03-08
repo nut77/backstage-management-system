@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  // let声明的变量不会提升声明，var的会提升
+  let testMsg = 'msg';
+  var foo = 1;
+  (function foo() {
+    foo = 10
+    console.log(foo);
+  }());
+</script>
+</body>
+</html>
